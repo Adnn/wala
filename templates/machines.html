@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang=en>
+
+<head>
+<meta charset=utf-8>
+<title>Machines</title>
+<script type="text/javascript" src="{{ url_for('static', filename='script.js') }}"></script>
+
+<!-- see: https://purecss.io/base/
+
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
+      integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls"
+      crossorigin="anonymous"/>
+-->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/base-min.css"/>
+
+<style>
+li {
+    list-style-type: none;
+}
+
+.status_unknown {
+    color: gray;
+}
+
+.status_ok {
+    color: green;
+}
+
+.status_ko {
+    color: red;
+}
+</style>
+
+
+</head>
+
+<body>
+    <ul>
+    {% for machineName, script_list in machines.items() %}
+    <!--
+        Note: this does not fly:
+              tojson seems to always wrap string literals in double quotes,
+              and if we wrap onclick value in single quotes instead of double,
+              flask/jinja seems to revert to double anyway
+        <li>{{ machineName }} - <a onclick="refreshStatuses('{{ machineName }}', {{ script_list.statuses|tojson|safe }});">refresh</a></li>
+    -->
+    <!-- TODO: find a better way than an explicit loop over statuses -->
+    <li>{{ machineName }} - <a onclick="refreshStatuses_sequential('{{ machineName }}', [{% for status in script_list.statuses %}'{{ status }}',{% endfor %}]);">refresh</a></li>
+
+        <!-- Status -->
+        <div>
+            <ul>
+            {% for script in script_list.statuses %}
+            <li>
+                <span id="status_{{ machineName }}_{{ script }}" class="status_ko">
+                    {{ script[3:] }}
+                </span>
+            </li>
+            {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Actions -->
+        <div>
+            <ul>
+            {% for script in script_list.actions %}
+            <!--<li><a href="/execute/{{ machineName }}/{{ script }}">{{ script }}</a></li>-->
+            <li>
+                <button id="btn_{{ machineName }}_{{ script }}"
+                        onclick="act('/execute/{{ machineName }}/{{ script }}', this);">
+                    {{ script }}
+                </button>
+            </li>
+            {% endfor %}
+            </ul>
+
+        </div>
+    {% endfor %}
+    </ul>
+</body>
+
+</html>
