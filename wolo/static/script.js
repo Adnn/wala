@@ -80,6 +80,6 @@ function act(endpoint, button)
                         (text) => alert(`Response status ${response.status} : ${text}.`));
                 }
             },
-            (typeError) => alert("Fetched failed with: ", typeError))
+            (typeError) => alert("Fetch failed with: ", typeError))
         .finally(() => button.disabled = false);
 }
