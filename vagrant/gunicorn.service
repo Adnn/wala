@@ -1,0 +1,13 @@
+[Unit]
+Description=gunicorn daemon
+After=network.target
+
+[Service]
+User=vagrant
+Group=vagrant
+WorkingDirectory=/vagrant
+ExecStart=/home/vagrant/.venv-vagrant/bin/gunicorn -w 2 'wolo:app_proxied'
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
