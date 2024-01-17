@@ -62,6 +62,7 @@ def abort_plaintext(status_code, text):
 def runscript(machine, script):
     machinedir = Path(os.path.join(configFolder, machine))
     env_dict = load_env_file(machinedir / ".env")
+    env_dict["PATH"] = os.environ["PATH"]
     script_path = machinedir / (script + ".sh")
     # First make sure the script is under the config folder, trying to prevent escaping
     if script_path.resolve().is_relative_to(Path(configFolder).resolve()) \
