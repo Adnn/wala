@@ -13,3 +13,8 @@ li {
 .status_ko {
     color: red;
 }
+
+.status_error {
+    color: red;
+    font-style: italic;
+}

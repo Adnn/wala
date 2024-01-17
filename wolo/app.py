@@ -1,4 +1,4 @@
-from flask import abort, Flask, render_template
+from flask import abort, Flask, make_response, render_template
 
 from pathlib import Path
 import subprocess, os
@@ -38,24 +38,57 @@ def machines():
     return render_template("machines.html", machines=machines)
 
 
-# TODO: we should ensure that script dooes not contain path separators and '.'
-@app.route("/execute/<machine>/<script>")
-def execute(machine, script):
+def abort_plaintext(status_code, text):
+    # Return a plaintext message instead of HTML
+    #see: https://stackoverflow.com/a/69829766/1027706
+    response = make_response(text)
+    response.status_code = status_code
+    abort(response)
+
+
+def runscript(machine, script):
     scriptPath = Path(os.path.join(configFolder, machine, script + ".sh"))
     # First make sure the script is under the config folder, trying to prevent escaping
     if scriptPath.resolve().is_relative_to(Path(configFolder).resolve()) \
        and os.path.isfile(scriptPath):
         try:
             result = subprocess.run([scriptPath,],
-                                    timeout = commandTimeoutSeconds)
-            app.logger.info(f"Execution of '{machine}/{script}' returned code {result.returncode}.")
-            if result.returncode == 0:
-                return ("", 204)
-            else:
-                return (f"Execution failed with return code {result.returncode}", 500)
+                                  timeout = commandTimeoutSeconds,
+                                  capture_output = True,
+                                  text = True)
+            if result.stderr:
+                app.logger.error(f"Execution of {scriptPath} wrote to stderr:\n{result.stderr}")
+            return result;
         except Exception as error:
-            return(f"Could not execute, error: {error}.", 500)
+            abort_plaintext(500, f"Could not execute, error: {error}")
         except:
-            return(f"Could not execute, unknown type was raised.", 500)
+            abort_plaintext(500, f"Could not execute, unknown type was raised.")
     else:
-        abort(400)
+        abort_plaintext(400, "Bad request.")
+
+
+# TODO: ensure that script cannot contain path separators and '.'
+@app.route("/execute/<machine>/<script>")
+def execute(machine, script):
+        result = runscript(machine, script)
+        app.logger.info(f"Execution of '{machine}/{script}' returned code {result.returncode}.")
+        if result.returncode == 0:
+            return ("", 204)
+        else:
+            stderr_diag = ""
+            if result.stderr:
+                stderr_diag = f"\nScript wrote to stderr: {result.stderr}"
+            return (f"Execution failed with return code {result.returncode}.{stderr_diag}", 500)
+
+
+@app.route("/status/<machine>/<script>")
+def queryStatus(machine, script):
+        result = runscript(machine, script)
+        app.logger.info(f"Query status of '{machine}/{script}' returned code {result.returncode}.")
+        if result.returncode == 0:
+            return ("", 204)
+        else:
+            body = {"return_code": result.returncode}
+            if result.stderr:
+                body["stderr"] = result.stderr
+            return (body, 200)

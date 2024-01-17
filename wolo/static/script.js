@@ -7,15 +7,21 @@ function alerting(message)
 }
 
 
-function setStatus(element, statusResult)
+function setStatus(element, response)
 {
-        if (statusResult.ok)
+        if (response.status === 204)
         {
             element.className = "status_ok";
         }
-        else
+        else if (response.status === 200)
         {
             element.className = "status_ko";
+        }
+        else
+        {
+            element.className = "status_error";
+            response.text().then(
+                (text) => {alert(`Unexepect status response code ${response.status}:\n${text}`);});
         }
 }
 
@@ -63,7 +69,8 @@ async function refreshStatuses_allAtOnce(machineName, statuses)
 
 async function query(machine, stat)
 {
-    return fetch(`/execute/${machine}/status_${stat}`)
+    return fetch(`/status/${machine}/status_${stat}`)
+            .catch((typeError) => alert("Fetch failed with: ", typeError))
 }
 
 
@@ -77,7 +84,7 @@ function act(endpoint, button)
                 if(!response.ok)
                 {
                     response.text().then(
-                        (text) => alert(`Response status ${response.status} : ${text}.`));
+                        (text) => alert(`Response status ${response.status}:\n${text}`));
                 }
             },
             (typeError) => alert("Fetch failed with: ", typeError))
