@@ -1,12 +1,21 @@
 from flask import abort, Flask, make_response, render_template
 
 from pathlib import Path
-import subprocess, os
+import os, re, subprocess
 
 app = Flask(__name__)
 
 configFolder = "./config/"
 commandTimeoutSeconds = 5
+
+
+@app.template_filter("present_name")
+def present_name(script_name: str) -> str:
+    m = re.match("\d+?_(.*)", script_name)
+    if m is not None:
+        return m.group(1)
+    else:
+        return script_name
 
 
 @app.route("/")
@@ -29,7 +38,7 @@ def machines():
             app.logger.warning(f"Configuration folder contains a file '{entry}', it will be ignored.")
             continue
         machines[entry] = {"actions": [], "statuses": []}
-        for name in (Path(f).stem for f in os.listdir(machineFolder) if os.path.isfile(os.path.join(machineFolder, f))):
+        for name in (Path(f).stem for f in sorted(os.listdir(machineFolder)) if os.path.isfile(os.path.join(machineFolder, f))):
             if name.startswith("status_"):
                 machines[entry]["statuses"].append(name[7:])
             else:

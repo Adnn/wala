@@ -43,7 +43,7 @@
             {% for script in script_list.statuses %}
             <li>
                 <span id="status_{{ machineName }}_{{ script }}" class="status_ko">
-                    {{ script[3:] }}
+                    {{ script | present_name() }}
                 </span>
             </li>
             {% endfor %}
@@ -54,11 +54,10 @@
         <div>
             <ul>
             {% for script in script_list.actions %}
-            <!--<li><a href="/execute/{{ machineName }}/{{ script }}">{{ script }}</a></li>-->
             <li>
                 <button id="btn_{{ machineName }}_{{ script }}"
                         onclick="act('/execute/{{ machineName }}/{{ script }}', this);">
-                    {{ script }}
+                    {{ script | present_name() }}
                 </button>
             </li>
             {% endfor %}
