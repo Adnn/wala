@@ -1,0 +1,11 @@
+[project]
+name = "wolo"
+version = "0.0.2"
+description = "Web interface to execute scripts and get status feedback."
+dependencies = [
+    "flask",
+]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
