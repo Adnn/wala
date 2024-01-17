@@ -15,24 +15,7 @@
 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/base-min.css"/>
 
-<style>
-li {
-    list-style-type: none;
-}
-
-.status_unknown {
-    color: gray;
-}
-
-.status_ok {
-    color: green;
-}
-
-.status_ko {
-    color: red;
-}
-</style>
-
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
 
 </head>
 
@@ -47,7 +30,12 @@ li {
         <li>{{ machineName }} - <a onclick="refreshStatuses('{{ machineName }}', {{ script_list.statuses|tojson|safe }});">refresh</a></li>
     -->
     <!-- TODO: find a better way than an explicit loop over statuses -->
-    <li>{{ machineName }} - <a onclick="refreshStatuses_sequential('{{ machineName }}', [{% for status in script_list.statuses %}'{{ status }}',{% endfor %}]);">refresh</a></li>
+        <li>{{ machineName }} -
+            <a onclick="refreshStatuses_sequential('{{ machineName }}',
+               [{% for status in script_list.statuses %}'{{ status }}',{% endfor %}]);">
+                refresh
+            </a>
+        </li>
 
         <!-- Status -->
         <div>
