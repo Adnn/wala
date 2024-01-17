@@ -1,3 +1,5 @@
+from .loadenv import load_env_file
+
 from flask import abort, Flask, make_response, render_template
 
 from pathlib import Path
@@ -33,12 +35,14 @@ def machines():
 
     machines = {}
     for entry in os.listdir(configFolder):
-        machineFolder = os.path.join(configFolder, entry)
-        if not Path(machineFolder).is_dir():
+        machinedir = os.path.join(configFolder, entry)
+        if not Path(machinedir).is_dir():
             app.logger.warning(f"Configuration folder contains a file '{entry}', it will be ignored.")
             continue
         machines[entry] = {"actions": [], "statuses": []}
-        for name in (Path(f).stem for f in sorted(os.listdir(machineFolder)) if os.path.isfile(os.path.join(machineFolder, f))):
+        for name in (Path(f).stem for f in sorted(os.listdir(machinedir)) \
+                                  if os.path.isfile(os.path.join(machinedir, f))
+                                     and f[0] != "."):
             if name.startswith("status_"):
                 machines[entry]["statuses"].append(name[7:])
             else:
@@ -56,17 +60,20 @@ def abort_plaintext(status_code, text):
 
 
 def runscript(machine, script):
-    scriptPath = Path(os.path.join(configFolder, machine, script + ".sh"))
+    machinedir = Path(os.path.join(configFolder, machine))
+    env_dict = load_env_file(machinedir / ".env")
+    script_path = machinedir / (script + ".sh")
     # First make sure the script is under the config folder, trying to prevent escaping
-    if scriptPath.resolve().is_relative_to(Path(configFolder).resolve()) \
-       and os.path.isfile(scriptPath):
+    if script_path.resolve().is_relative_to(Path(configFolder).resolve()) \
+       and os.path.isfile(script_path):
         try:
-            result = subprocess.run([scriptPath,],
+            result = subprocess.run([script_path,],
                                   timeout = commandTimeoutSeconds,
                                   capture_output = True,
-                                  text = True)
+                                  text = True,
+                                  env = env_dict)
             if result.stderr:
-                app.logger.error(f"Execution of {scriptPath} wrote to stderr:\n{result.stderr}")
+                app.logger.error(f"Execution of {script_path} wrote to stderr:\n{result.stderr}")
             return result;
         except Exception as error:
             abort_plaintext(500, f"Could not execute, error: {error}")
