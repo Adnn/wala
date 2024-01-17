@@ -12,12 +12,13 @@ apt-get install -y python3-pip python3-venv nginx
 #
 
 # Put the venv out of the repository
-VENV=.venv-vagrant
+VENV=.venv-wolo
 python3 -m venv ${VENV}
 source ${VENV}/bin/activate
 
 pushd /vagrant
-pip3 install -r requirements.txt
+pip3 install -e .
+pip3 install gunicorn
 popd
 
 deactivate
@@ -36,5 +37,5 @@ popd
 nginx -s reload
 
 # Enable gunicorn service, auto starting
-cp /vagrant/vagrant/gunicorn.service /etc/systemd/system/
+ln -s /vagrant/vagrant/gunicorn.service /etc/systemd/system/
 sudo systemctl enable --now gunicorn.service
