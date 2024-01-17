@@ -17,6 +17,14 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
 
+<script>
+    const gAllStatuses = {
+    {% for machineName, script_list in machines.items() %}
+        "{{machineName}}" : {{ script_list.statuses | tojson }},
+    {% endfor %}
+    }
+</script>
+
 </head>
 
 <body>

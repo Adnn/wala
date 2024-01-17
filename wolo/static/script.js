@@ -1,5 +1,17 @@
 "use strict";
 
+document.addEventListener(
+    'DOMContentLoaded',
+    () =>
+    {
+        for (const machine in gAllStatuses)
+        {
+            refreshStatuses_sequential(
+                machine,
+                gAllStatuses[machine]);
+        }
+    },
+    false);
 
 function alerting(message)
 {
