@@ -31,10 +31,18 @@
     -->
     <!-- TODO: find a better way than an explicit loop over statuses -->
         <li>{{ machineName }} -
-            <a onclick="refreshStatuses_sequential('{{ machineName }}',
-               [{% for status in script_list.statuses %}'{{ status }}',{% endfor %}]);">
+            <a onclick="refreshStatuses_sequential(
+                            '{{ machineName }}',
+                            [{% for status in script_list.statuses %}'{{ status }}',{% endfor %}]);">
                 refresh
             </a>
+            <!-- Alternative to manual loop, adding forcescape to json output html-escape the double quotes
+            <a onclick="refreshStatuses_sequential(
+                            '{{ machineName }}',
+                            {{ script_list.statuses | tojson | forceescape }})">
+                refresh
+            </a>
+            -->
         </li>
 
         <!-- Status -->
