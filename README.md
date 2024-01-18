@@ -1,12 +1,12 @@
-# wolo
+# wala
 Web interface to execute scripts and get status feedback.
 
 ## Development
 
 Clone the project
 
-    gh repo clone wolo
-    pushd wolo
+    gh repo clone Adnn/wala
+    pushd wala
 
 Create and use a virtual env
 
@@ -19,11 +19,11 @@ Install the project and its dependencies
 
 Run the development server, then point your web browser to http://localhost:5000
 
-    flask --app wolo run --debug
+    flask --app wala run --debug
 
 ## Vagrant deployment
 
-`vagrant/` provides a vagrant environment where the `wolo` web application is deployed
+`vagrant/` provides a vagrant environment where the `wala` web application is deployed
 in a way amenable to production.
 
 It is using `gunicorn` WSGI server, automatically monitored via `systemd`.

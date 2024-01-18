@@ -6,7 +6,7 @@ After=network.target
 User=vagrant
 Group=vagrant
 WorkingDirectory=/vagrant
-ExecStart=/home/vagrant/.venv-wolo/bin/gunicorn -w 2 'wolo:app_proxied'
+ExecStart=/home/vagrant/.venv-wala/bin/gunicorn -w 2 'wala:app_proxied'
 Restart=always
 
 [Install]

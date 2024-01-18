@@ -1,4 +1,4 @@
-# Wolo server configuration
+# wala server configuration
 #
 server {
 	listen 80 default_server;

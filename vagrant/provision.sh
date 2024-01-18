@@ -8,11 +8,11 @@ apt-get install -y python3-pip python3-venv nginx
 
 
 #
-# Install the wolo application
+# Install the wala application
 #
 
 # Put the venv out of the repository
-VENV=.venv-wolo
+VENV=.venv-wala
 python3 -m venv ${VENV}
 source ${VENV}/bin/activate
 
@@ -28,11 +28,11 @@ deactivate
 # Server configuration
 #
 
-# Enable wolo server in NGINX config
-cp /vagrant/vagrant/wolo.nginx /etc/nginx/sites-available/wolo
+# Enable wala server in NGINX config
+cp /vagrant/vagrant/wala.nginx /etc/nginx/sites-available/wala
 pushd /etc/nginx/sites-enabled/
 rm default
-ln -s ../sites-available/wolo .
+ln -s ../sites-available/wala .
 popd
 nginx -s reload
 

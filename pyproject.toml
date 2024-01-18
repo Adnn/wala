@@ -1,10 +1,24 @@
 [project]
-name = "wolo"
+name = "wala"
 version = "0.0.2"
+authors = [
+    { name="Adnn" },
+]
 description = "Web interface to execute scripts and get status feedback."
 dependencies = [
     "flask",
 ]
+readme = "README.md"
+requires-python = ">=3.7" #I did not test that assertion, please report if this is too lax.
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/Adnn/wala"
+Issues = "https://github.com/Adnn/wala/issues"
 
 [build-system]
 requires = ["flit_core<4"]
